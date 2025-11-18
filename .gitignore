@@ -1,0 +1,101 @@
+# .NET Core
+bin/
+obj/
+*.dll
+*.pdb
+*.exe
+
+# .NET Core User Secrets
+secrets.json
+
+# User-specific configuration
+.DS_Store
+.vscode/settings.json
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+.vscode/
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# EF Core Migrations
+Migrations/
+!Migrations/*.cs  
+
+# NuGet Packages
+*.nupkg
+# NuGet Symbol Packages
+*.snupkg
+
+# JetBrains Rider
+.idea/
+*.dotSettings.user
+*.user.local
+
+# Visual Studio Code
+.vscode/
+
+# Logs
+logs
+*.log
+
+# Runtime Data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# PowerShell
+exportProperties.json
+exportReleaseNotes.json
+
+# Appsettings (локальные секреты)
+appsettings.*.json
+!appsettings.Development.json  # Коммить dev, но не prod (с паролями)
+!appsettings.json
+
+# Docker
+Dockerfile.*
+docker-compose.*
+.dockerignore
+
+# Frontend (если добавишь React/TS в subfolder)
+**/node_modules/
+**/dist/
+**/build/
+.yarn/
+.pnp.*
+.pnp.js
+
+# Global Tools
+global.json
+!global.json 
