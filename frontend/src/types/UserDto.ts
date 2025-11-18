@@ -2,24 +2,23 @@ export type UserDto = {
   id: string;
   name: string;
   email: string;
-  dateOfBirth: string;
-  registrationDate: string;
-  avatarLink: string | null;
-}
+  linkToAvatar?: string | null;
+  dateOfBirth?: string | null;
+};
 
-export type RegisterUserDto = {
+export type RegisterDto = {
   name: string;
   email: string;
   password: string;
-  dateOfBirth: string;
-}
+  dateOfBirth?: string;
+};
 
 export type LoginDto = {
   email: string;
   password: string;
-}
+};
 
 export type UpdateProfileDto = {
-  name: string;
-  avatarLink: string | null;
-}
+  name?: string;
+  linkToAvatar?: string;
+};

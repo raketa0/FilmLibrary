@@ -1,68 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ProfileForm } from '../components/ProfileForm';
-import { userApi } from '../services/api';
-import type{ UserDto, UpdateProfileDto } from '../types/UserDto';
+import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
-const ProfilePage: React.FC = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<UserDto | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default function ProfilePage() {
+  const { user, updateProfile } = useAuth();
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState(user?.name || '');
+  const [avatar, setAvatar] = useState(user?.linkToAvatar || '');
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const id = localStorage.getItem('userId');  // ID из localStorage после логина
-      console.log('LocalStorage userId:', id);  // Лог для отладки (F12 Console)
+  if (!user) return null;
 
-      if (!id) {
-        console.log('No userId in localStorage — redirect to auth');
-        setError('Пользователь не найден. Войдите ещё раз.');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const fetchedUser = await userApi.getUser(id);
-        console.log('User fetched:', fetchedUser);
-        setUser(fetchedUser);
-      } catch (err: any) {
-        console.error('Fetch user error:', err);
-        setError(err.message || 'Ошибка загрузки профиля');
-        setTimeout(() => navigate('/auth'), 2000);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [navigate]);
-
-  const handleUpdate = async (data: UpdateProfileDto) => {
-    if (!user) return;
-    try {
-      const updatedUser = await userApi.updateProfile(user.id, data);
-      setUser(updatedUser);
-      console.log('Profile updated:', updatedUser);
-    } catch (error) {
-      console.error('Update error:', error);
-      setError('Ошибка обновления');
-    }
+  const save = async () => {
+    const res = await updateProfile(user.id, { name, linkToAvatar: avatar });
+    if (!res.success) alert(res.error || 'Ошибка');
+    else setEditing(false);
   };
 
-  if (loading) return <p>Загрузка профиля...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!user) return <p>Профиль не найден. <button onClick={() => navigate('/auth')}>Войти</button></p>;
-
   return (
-    <div className="profile-page">
-      <h1>Личный кабинет</h1>
-      <p>Email: {user.email}</p>
-      <p>Дата рождения: {new Date(user.dateOfBirth).toLocaleDateString()}</p>
-      <p>Дата регистрации: {new Date(user.registrationDate).toLocaleDateString()}</p>
-      <ProfileForm user={user} onUpdate={handleUpdate} />
+    <div className="max-w-4xl mx-auto card">
+      <div className="grid grid-cols-3 gap-6">
+        <div className="col-span-1 p-6 flex flex-col items-center">
+          <img src={user.linkToAvatar || '/avatar-default.png'} alt="avatar" className="w-36 h-36 rounded-full mb-4 border border-white/10" />
+          {editing ? null : <h3 className="text-xl font-bold">{user.name}</h3>}
+          <p className="text-sm text-white/70 mt-1">{user.email}</p>
+        </div>
+
+        <div className="col-span-2 p-6">
+          <h3 className="text-lg font-semibold mb-3">Профиль</h3>
+          {!editing ? (
+            <>
+              <p className="mb-2"><span className="text-white/70">Имя:</span> {user.name}</p>
+              <p className="mb-2"><span className="text-white/70">Email:</span> {user.email}</p>
+              <button className="mt-4 px-4 py-2 rounded-md bg-brand-500" onClick={() => setEditing(true)}>Редактировать профиль</button>
+            </>
+          ) : (
+            <div className="space-y-3">
+              <div><label className="block text-sm">Имя</label><input value={name} onChange={e=>setName(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-md bg-transparent border border-white/10" /></div>
+              <div><label className="block text-sm">Ссылка на аватар</label><input value={avatar} onChange={e=>setAvatar(e.target.value)} className="w-full mt-1 px-3 py-2 rounded-md bg-transparent border border-white/10" /></div>
+              <div className="flex gap-3"><button onClick={save} className="px-4 py-2 rounded-md bg-brand-500">Сохранить</button><button onClick={()=>setEditing(false)} className="px-4 py-2 rounded-md bg-white/6">Отмена</button></div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
-};
-
-export { ProfilePage };
+}

@@ -1,38 +1,27 @@
-import React, { useState } from 'react';
-import { RegistrationForm } from '../components/RegistrationForm';
-import { LoginForm } from '../components/LoginForm';
-import { userApi } from '../services/api';
-import type { RegisterUserDto, LoginDto } from '../types/UserDto';
+import { useState } from 'react';
+import LoginForm from '../components/LoginForm';
+import RegistrationForm from '../components/RegistrationForm';
+import { motion } from 'framer-motion';
 
-const AuthPage: React.FC = () => {
-  const [isRegister, setIsRegister] = useState(false);
-
-  const handleSuccess = async (data: RegisterUserDto | LoginDto) => {
-    try {
-      if (isRegister) {
-        const user = await userApi.register(data as RegisterUserDto);
-        console.log('Регистрация:', user);
-        // Редирект: window.location.href = '/profile';
-      } else {
-        const user = await userApi.login(data as LoginDto);
-        console.log('Логин:', user);
-        // Сохрани в localStorage: localStorage.setItem('user', JSON.stringify(user));
-      }
-      window.location.href = '/profile';  // Редирект на профиль
-    } catch (error) {
-      console.error('Ошибка:', error);
-    }
-  };
+export default function AuthPage() {
+  const [mode, setMode] = useState<'login'|'register'>('login');
 
   return (
-    <div className="auth-page">
-      <h1>{isRegister ? 'Регистрация' : 'Вход'}</h1>
-      <button onClick={() => setIsRegister(!isRegister)}>
-        {isRegister ? 'У меня аккаунт' : 'Создать аккаунт'}
-      </button>
-      {isRegister ? <RegistrationForm onSuccess={handleSuccess} /> : <LoginForm onSuccess={handleSuccess} />}
+    <div className="flex items-center justify-center">
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="max-w-3xl w-full card grid grid-cols-2 gap-6">
+        <div className="p-6">
+          <h2 className="text-2xl font-bold mb-2">Добро пожаловать</h2>
+          <p className="text-sm text-white/70 mb-6">Зарегистрируйтесь или войдите чтобы управлять коллекцией фильмов и личными настройками.</p>
+          <div className="flex gap-3 mt-6">
+            <button onClick={() => setMode('login')} className={`px-4 py-2 rounded-md ${mode==='login' ? 'bg-brand-500' : 'bg-white/6'}`}>Вход</button>
+            <button onClick={() => setMode('register')} className={`px-4 py-2 rounded-md ${mode==='register' ? 'bg-brand-500' : 'bg-white/6'}`}>Регистрация</button>
+          </div>
+        </div>
+
+        <div className="p-6">
+          {mode === 'login' ? <LoginForm /> : <RegistrationForm />}
+        </div>
+      </motion.div>
     </div>
   );
-};
-
-export { AuthPage };
+}

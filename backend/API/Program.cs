@@ -11,22 +11,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var frontendOrigin = "http://localhost:5173";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins(frontendOrigin)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
 builder.Services.AddDbContext<FilmLibraryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLocalhost",
-        policy =>
-        {
-            policy.AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .WithOrigins("http://localhost:5173");
-        });
-});
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
@@ -41,6 +42,7 @@ app.UseHttpsRedirection();
 app.UseCors("AllowLocalhost");
 
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

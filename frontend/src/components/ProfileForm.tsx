@@ -8,7 +8,7 @@ type Props = {
 
 export const ProfileForm: React.FC<Props> = ({ user, onUpdate }) => {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<UpdateProfileDto>({
-    defaultValues: { name: user.name, avatarLink: user.avatarLink || '' }
+    defaultValues: { name: user.name, linkToAvatar: user.linkToAvatar || 'frontend\src\public\react.svg' }
   });
 
   const submit: SubmitHandler<UpdateProfileDto> = async (data) => {
@@ -29,7 +29,7 @@ export const ProfileForm: React.FC<Props> = ({ user, onUpdate }) => {
       </div>
       <div>
         <label htmlFor="avatarLink">Ссылка на аватар:</label>
-        <input id="avatarLink" type="url" {...register('avatarLink')} />
+        <input id="avatarLink" type="url" {...register('linkToAvatar')} />
       </div>
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Сохранение...' : 'Сохранить'}
