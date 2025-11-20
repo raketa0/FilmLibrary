@@ -20,15 +20,11 @@ export default function Header() {
           {user ? (
             <>
               <Link to="/dashboard" className="px-3 py-1 rounded-md bg-white/6 hover:bg-white/8">Дашборд</Link>
-              <button
-                onClick={() => { logout(); nav('/'); }}
-                className="px-3 py-1 rounded-md bg-red-600/80 hover:bg-red-500 transition"
-              >
-                Выйти
-              </button>
+              <Link to="/profile" className="px-3 py-1 rounded-md bg-white/6 hover:bg-white/8">Профиль</Link>
+              <button onClick={() => { logout(); nav('/'); }} className="px-3 py-1 rounded-md bg-red-600/80 hover:bg-red-500 transition">Выйти</button>
             </>
           ) : (
-            <Link to="/" className="px-3 py-1 rounded-md bg-white/6 hover:bg-white/8">Войти</Link>
+            <Link to="/" className="px-3 py-1 rounded-md bg-white/6 hover:bg-white/8">Войти / Регистрация</Link>
           )}
         </div>
       </div>

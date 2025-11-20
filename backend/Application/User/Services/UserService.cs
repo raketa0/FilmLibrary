@@ -9,13 +9,14 @@ namespace Application.User.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+		private string _storePath = "C:\\Users\\Арбузер\\OneDrive\\Desktop\\БД\\FilmLibrary\\store";
 
-        public UserService(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
+		public UserService(IUserRepository userRepository)
+		{
+			_userRepository = userRepository;
+		}
 
-        public async Task<UserDto> RegisterAsync(RegisterUserDto dto)
+		public async Task<UserDto> RegisterAsync(RegisterUserDto dto)
         {
             var existing = await _userRepository.GetByEmailAsync(dto.Email);
             if (existing != null)
@@ -24,7 +25,12 @@ namespace Application.User.Services
             var user = Domain.Entities.User.User.Create(dto.Name, dto.Email, dto.Password, dto.DateOfBirth);
 
             await _userRepository.AddAsync(user);
-            return MapToDto(user);
+			var userFolder = Path.Combine(_storePath, dto.Email);
+			Directory.CreateDirectory(userFolder);
+			var userSubFolder = Path.Combine(userFolder, "user");
+			Directory.CreateDirectory(userSubFolder);
+
+			return MapToDto(user);
         }
         public async Task<UserDto?> LoginAsync(LoginDto dto)
         {
@@ -35,17 +41,21 @@ namespace Application.User.Services
             return MapToDto(user);
         }
 
-        public async Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileDto dto)
-        {
-            var user = await _userRepository.GetByIdAsync(userId)
-                ?? throw new KeyNotFoundException("Пользователь не найден");
+        	public async Task<UserDto> UpdateProfileAsync(Guid id, UpdateProfileDto dto)
+		    {
+			    var user = await _userRepository.GetByIdAsync(id)
+				    ?? throw new KeyNotFoundException("Пользователь не найден");
 
-            user.UpdateProfile(dto.Name, dto.AvatarLink);
-            await _userRepository.UpdateAsync(user);
-            return MapToDto(user);
-        }
+			    if (!string.IsNullOrEmpty(dto.Password) && dto.Password != dto.ConfirmPassword)
+				    throw new ArgumentException("Пароли не совпадают");
 
-        public async Task<UserDto> GetByIdAsync(Guid id)
+			    user.UpdateProfile(dto.Name, dto.AvatarLink, dto.Email, dto.Password, dto.DateOfBirth); 
+
+			    await _userRepository.UpdateAsync(user);
+			    return MapToDto(user);
+		    }
+
+		public async Task<UserDto> GetByIdAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id)
                 ?? throw new KeyNotFoundException("Пользователь не найден");
@@ -73,8 +83,33 @@ namespace Application.User.Services
                 Users = userDtos
             };
         }
+		public async Task UpdateAvatarAsync(Guid id, string relativePath)
+		{
+			var user = await _userRepository.GetByIdAsync(id)
+				?? throw new KeyNotFoundException("Пользователь не найден");
 
-        private UserDto MapToDto(Domain.Entities.User.User user)
+			user.UpdateAvatar(relativePath);
+			await _userRepository.UpdateAsync(user);
+		}
+
+		public async Task DeleteAsync(Guid id)
+		{
+			var user = await _userRepository.GetByIdAsync(id)
+				?? throw new KeyNotFoundException("Пользователь не найден");
+
+			var userEmail = user.Email.Value;
+			var userFolder = Path.Combine(_storePath, userEmail);
+			if (Directory.Exists(userFolder))
+			{
+				Directory.Delete(userFolder, recursive: true); 
+			}
+
+			await _userRepository.DeleteAsync(id);
+		}
+
+		
+
+		private UserDto MapToDto(Domain.Entities.User.User user)
         {
             return new UserDto
             {

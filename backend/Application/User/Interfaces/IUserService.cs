@@ -7,10 +7,12 @@ namespace Application.User.Interfaces
     {
         Task<UserDto> RegisterAsync(RegisterUserDto dto);
         Task<UserDto?> LoginAsync(LoginDto dto);
-
-
         Task<UserDto> UpdateProfileAsync(Guid userId, UpdateProfileDto dto);
-        Task<UserDto> GetByIdAsync(Guid id);
+        Task UpdateAvatarAsync(Guid id, string relativePath);
+
+		Task<UserDto> GetByIdAsync(Guid id);
         Task<GetAllUserDto> GetAllAsync();
-    }
+		Task DeleteAsync(Guid id);
+
+	}
 }

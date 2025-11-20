@@ -5,13 +5,13 @@ namespace Domain.Entities.User
 {
     public class User : AggregateRoot<Guid>
     {
-        public new Guid Id { get; private set; }
-        public string Name { get; private set; } = string.Empty;
-        public Email Email { get; private set; }
-        public Password Password { get; private set; }
-        public DateTime DateOfBirth { get; private set; }
+        public new Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public Email Email { get; set; }
+        public Password Password { get; set; }
+        public DateTime DateOfBirth { get; set; }
         public DateTime RegistrationDate { get; private set; } = DateTime.Now;
-        public string? LinkToAvatar { get; private set; }
+        public string? LinkToAvatar { get; set; }
 
         private User() { }
 
@@ -35,16 +35,58 @@ namespace Domain.Entities.User
             return user;
         }
 
-        public void UpdateProfile(string newName, string? newAvatarLink)
+        public void UpdateProfile(
+            string newName,
+            string? newAvatarLink = null,
+            string? newEmail = null,
+            string? newPassword = null,
+            DateTime? newBirthDate = null)
         {
-            if (string.IsNullOrEmpty(newName)) throw new ArgumentException("Новое имя обязательно");
-            Name = newName;
-            LinkToAvatar = newAvatarLink;
+            if (string.IsNullOrEmpty(newName))
+            {
+                Name = newName;
+            }
+
+            if (!string.IsNullOrEmpty(newEmail)) 
+            {
+                Email = Email.Create(newEmail);
+            }
+
+            if (!string.IsNullOrEmpty(newPassword)) 
+            {
+                UpdatePassword(newPassword);
+            }
+
+            if (newBirthDate.HasValue) 
+            {
+                UpdateDateOfBirth(newBirthDate.Value);
+            }
+
+            if (newAvatarLink != null) 
+            {
+                LinkToAvatar = newAvatarLink;
+            }
         }
 
-        public bool IsAdult() => DateTime.Now.Year - DateOfBirth.Year >= 18; 
+        public bool IsAdult() => DateTime.Now.Year - DateOfBirth.Year >= 18;
 
-        private void ValidateAge()
+		public void UpdatePassword(string newPassword)
+		{
+			Password = Password.Create(newPassword);
+		}
+
+		public void UpdateDateOfBirth(DateTime newDob)
+		{
+			DateOfBirth = newDob;
+		}
+
+		public void UpdateAvatar(string link)
+		{
+			LinkToAvatar = link;
+		}
+
+
+		private void ValidateAge()
         {
             if (!IsAdult())
                 throw new DomainException("Несовершеннолетний: ограничения на контент");

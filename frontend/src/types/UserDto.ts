@@ -20,5 +20,9 @@ export type LoginDto = {
 
 export type UpdateProfileDto = {
   name?: string;
-  linkToAvatar?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+  dateOfBirth?: string;
+  AvatarLink?: string; // optional if you want to pass from frontend (note capital A matches backend DTO field AvatarLink)
 };
