@@ -16,7 +16,7 @@ namespace FilmLibrary.API.Controllers
 		public UsersController(IUserService service)
 		{
 			_service = service;
-			_storePath = "C:\\Users\\Арбузер\\OneDrive\\Desktop\\БД\\FilmLibrary\\store";
+			_storePath = "D:\\studies\\FilmLibrary\\store";
 		}
 
 		[HttpPost("register")]

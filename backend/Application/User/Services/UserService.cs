@@ -9,7 +9,7 @@ namespace Application.User.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-		private string _storePath = "C:\\Users\\Арбузер\\OneDrive\\Desktop\\БД\\FilmLibrary\\store";
+		private string _storePath = "D:\\studies\\FilmLibrary\\store";
 
 		public UserService(IUserRepository userRepository)
 		{
