@@ -78,9 +78,9 @@ Thumbs.db
 exportProperties.json
 exportReleaseNotes.json
 
-# Appsettings (локальные секреты)
+# Appsettings (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 appsettings.*.json
-!appsettings.Development.json  # Коммить dev, но не prod (с паролями)
+!appsettings.Development.json  # пїЅпїЅпїЅпїЅпїЅпїЅпїЅ dev, пїЅпїЅ пїЅпїЅ prod (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 !appsettings.json
 
 # Docker
@@ -88,7 +88,7 @@ Dockerfile.*
 docker-compose.*
 .dockerignore
 
-# Frontend (если добавишь React/TS в subfolder)
+# Frontend (пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ React/TS пїЅ subfolder)
 **/node_modules/
 **/dist/
 **/build/
@@ -99,3 +99,5 @@ docker-compose.*
 # Global Tools
 global.json
 !global.json 
+/store/
+backend.zip
