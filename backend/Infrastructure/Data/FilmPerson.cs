@@ -1,9 +1,10 @@
 ﻿
+
 namespace Infrastructure.Data
 {
-    public class FilmGenre
+    public class FilmPerson
     {
         public int FilmId { get; set; }
-        public int GenreId { get; set; }
+        public int PersonId { get; set; }
     }
 }

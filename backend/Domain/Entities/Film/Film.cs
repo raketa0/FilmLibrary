@@ -3,6 +3,9 @@ namespace Domain.Entities.Film
 {
     public class Film
     {
+        private readonly List<int> _genreIds = new();
+        public IReadOnlyCollection<int> GenreIds => _genreIds;
+
         public int Id { get; private set; }
 
         public Guid CreatorId { get; private set; }
@@ -54,12 +57,8 @@ namespace Domain.Entities.Film
             string linkToPoster,
             string linkToFilm,
             string country,
-            Rating rating,
             AgeRestriction ageRestriction)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Film name is required.");
-
             return new Film(
                 creatorId,
                 name,
@@ -69,8 +68,53 @@ namespace Domain.Entities.Film
                 linkToPoster,
                 linkToFilm,
                 country,
-                rating,
+                Rating.Empty(),
                 ageRestriction);
+        }
+
+        public void Rate(int value)
+        {
+            Rating = Rating.Add(value);
+        }
+
+        public void Update(
+            string name,
+            int yearOfRelease,
+            int duration,
+            string description,
+            string linkToPoster,
+            string linkToFilm,
+            string country,
+            Rating rating,
+            AgeRestriction ageRestriction)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Film name is required");
+
+            Name = name;
+            YearOfRelease = yearOfRelease;
+            Duration = duration;
+            Description = description;
+            LinkToPoster = linkToPoster;
+            LinkToFilm = linkToFilm;
+            Country = country;
+            Rating = rating;
+            AgeRestriction = ageRestriction;
+        }
+
+        public void AddGenre(int genreId)
+        {
+            if (_genreIds.Contains(genreId))
+            {  
+                return; 
+            }
+
+            _genreIds.Add(genreId);
+        }
+
+        public void RemoveGenre(int genreId)
+        {
+            _genreIds.Remove(genreId);
         }
     }
 }

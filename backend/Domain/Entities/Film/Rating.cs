@@ -3,29 +3,39 @@ namespace Domain.Entities.Film
 {
     public class Rating
     {
-        public int Value { get; }
+        public int Total { get; }
+        public int Votes { get; }
 
-        private Rating(int value)
+        public double Average()
         {
-            Value = value;
+            if (Votes == 0)
+            {
+                return 0;
+            }
+
+            if (Votes < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(Votes), "Votes cannot be negative"); 
+            }
+
+            return Total / Votes;
+            
+        }
+        private Rating(int total, int votes)
+        {
+            Total = total;
+            Votes = votes;
         }
 
-        public Rating Create(int value)
+        public static Rating Empty()
+            => new Rating(0, 0);
+
+        public Rating Add(int value)
         {
             if (value < 1 || value > 10)
                 throw new ArgumentException("Rating must be between 1 and 10.");
 
-            return new Rating(value);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is Rating rating && Value == rating.Value;
-        }
-
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
+            return new Rating(Total + value, Votes + 1);
         }
     }
 }

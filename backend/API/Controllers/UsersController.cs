@@ -96,8 +96,8 @@ namespace FilmLibrary.API.Controllers
 			await _service.DeleteAsync(id);
 			return Ok(new { success = true });
 		}
-
-		[HttpPost("{id}/UploadAvatar")]
+        /* Загрузка аватара пользователя 
+        [HttpPost("{id}/UploadAvatar")]
 		public async Task<IActionResult> UploadAvatar(Guid id, [FromForm] IFormFile avatar)
 		{
 			if (avatar == null || avatar.Length == 0)
@@ -128,6 +128,7 @@ namespace FilmLibrary.API.Controllers
 			{
 				return StatusCode(500, $"Ошибка загрузки аватара: {ex.Message}");
 			}
-		}
+        }
+		*/
 	}
 }

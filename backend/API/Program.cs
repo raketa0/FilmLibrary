@@ -1,8 +1,13 @@
+using Application.Film.Interfaces;
+using Application.Film.Services;
+using Application.Genre.Interfaces;
+using Application.Genre.Services;
 using Application.User.Interfaces;
 using Application.User.Services;
 using Domain.Repositories;
 using FilmLibrary.Infrastructure.Repositories;
 using Infrastructure.Data;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +33,14 @@ builder.Services.AddDbContext<FilmLibraryDbContext>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IFilmRepository, FilmRepository>();
+builder.Services.AddScoped<IFilmService, FilmService>();
+
+builder.Services.AddScoped<IGenreRepository, GenreRepository>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+
+
 
 var app = builder.Build();
 

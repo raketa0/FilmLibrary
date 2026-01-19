@@ -31,9 +31,11 @@ namespace Infrastructure.Configurations
 
             builder.OwnsOne(f => f.Rating, r =>
             {
-                r.Property(p => p.Value)
-                 .HasColumnName("Rating")
-                 .IsRequired();
+                r.Property(p => p.Total)
+                 .HasColumnName("RatingTotal");
+
+                r.Property(p => p.Votes)
+                 .HasColumnName("RatingVotes");
             });
 
             builder.OwnsOne(f => f.AgeRestriction, a =>
