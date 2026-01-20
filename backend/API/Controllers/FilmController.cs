@@ -65,5 +65,15 @@ namespace API.Controllers
             await _filmService.RateAsync(id, value);
             return Ok();
         }
+
+        [HttpPut("{id:int}/persons")]
+        public async Task<IActionResult> UpdatePersons(int id,
+            [FromBody] UpdateFilmPersonsDto dto)
+        {
+            await _filmService.UpdatePersonsAsync(id, dto.Persons);
+            return NoContent();
+        }
+
+
     }
 }

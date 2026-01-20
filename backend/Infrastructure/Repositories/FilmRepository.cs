@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Film;
+using Domain.Entities.Person;
 using Domain.Repositories;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -95,6 +96,32 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task AddPersonsAsync(int filmId, IEnumerable<(int personId, Career career)> persons)
+        {
+            var filmPersons = persons.Select(p =>
+                FilmPerson.Create(filmId, p.personId, p.career));
+
+            _context.FilmPersons.AddRange(filmPersons);
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task RemovePersonsAsync(int filmId)
+        {
+            var filmPersons = _context.FilmPersons
+                .Where(fp => fp.FilmId == filmId);
+
+            _context.FilmPersons.RemoveRange(filmPersons);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<int>> GetPersonIdsAsync(int filmId)
+        {
+            return await _context.FilmPersons
+                .Where(fp => fp.FilmId == filmId)
+                .Select(fp => fp.PersonId)
+                .ToListAsync();
+        }
 
     }
 }

@@ -1,5 +1,5 @@
 ﻿
-using Infrastructure.Data;
+using Domain.Entities.Film;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,13 +11,22 @@ namespace Infrastructure.Configurations
         {
             builder.ToTable("Film_Person");
 
-            builder.HasKey(fp => new { fp.FilmId, fp.PersonId });
+            builder.HasKey(fp => new 
+            { 
+                fp.FilmId, 
+                fp.PersonId,
+                fp.Career 
+            });
 
             builder.Property(fp => fp.FilmId)
-                   .HasColumnName("ID_Film");
+                .HasColumnName("ID_Film");
 
             builder.Property(fp => fp.PersonId)
-                   .HasColumnName("ID_Person");
+                .HasColumnName("ID_Person");
+
+            builder.Property(fp => fp.Career)
+                .HasConversion<int>();
+
         }
     }
 }

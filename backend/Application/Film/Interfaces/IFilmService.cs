@@ -16,5 +16,8 @@ namespace Application.Film.Interfaces
         Task<FilmDto> UpdateAsync(int filmId, UpdateFilmDto dto);
         Task DeleteAsync(int id);
         Task RateAsync(int filmId, int value);
+        Task UpdatePersonsAsync(
+            int filmId, IEnumerable<FilmPersonDto> persons);
+
     }
 }

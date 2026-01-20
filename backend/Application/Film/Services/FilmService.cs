@@ -1,6 +1,7 @@
 ﻿using Application.Film.DTOs;
 using Application.Film.Interfaces;
 using Domain.Entities.Film;
+using Domain.Entities.Person;
 using Domain.Repositories;
 
 namespace Application.Film.Services
@@ -8,11 +9,14 @@ namespace Application.Film.Services
     public class FilmService : IFilmService
     {
         private readonly IFilmRepository _filmRepository;
+        private readonly IFilmPersonRepository _filmPersonRepository;
 
-        public FilmService(IFilmRepository filmRepository)
+        public FilmService(IFilmRepository filmRepository, IFilmPersonRepository filmPersonRepository)
         {
             _filmRepository = filmRepository;
+            _filmPersonRepository = filmPersonRepository;
         }
+
 
         public async Task<FilmDto> CreateAsync(CreateFilmDto dto)
         {
@@ -30,12 +34,8 @@ namespace Application.Film.Services
 
             await _filmRepository.AddAsync(film);
 
-            foreach (var genreId in dto.GenreIds)
-            {
-                film.AddGenre(genreId);
-            }
-
-            await _filmRepository.AddGenresAsync(film.Id, film.GenreIds);
+            if (dto.GenreIds.Any())
+                await _filmRepository.AddGenresAsync(film.Id, dto.GenreIds);
 
             return await MapToDtoAsync(film);
         }
@@ -51,12 +51,10 @@ namespace Application.Film.Services
         public async Task<IEnumerable<FilmDto>> GetAllAsync()
         {
             var films = await _filmRepository.GetAllAsync();
-
             var result = new List<FilmDto>();
+
             foreach (var film in films)
-            {
                 result.Add(await MapToDtoAsync(film));
-            }
 
             return result;
         }
@@ -64,12 +62,10 @@ namespace Application.Film.Services
         public async Task<IEnumerable<FilmDto>> SearchAsync(string? name, IEnumerable<int>? genreIds)
         {
             var films = await _filmRepository.SearchAsync(name, genreIds);
-
             var result = new List<FilmDto>();
+
             foreach (var film in films)
-            {
                 result.Add(await MapToDtoAsync(film));
-            }
 
             return result;
         }
@@ -87,18 +83,14 @@ namespace Application.Film.Services
                 dto.LinkToPoster,
                 dto.LinkToFilm,
                 dto.Country,
-                film.Rating,
                 AgeRestriction.Create(dto.AgeRestriction)
             );
 
             await _filmRepository.RemoveGenresAsync(film.Id);
 
-            foreach (var genreId in dto.GenreIds)
-            {
-                film.AddGenre(genreId);
-            }
+            if (dto.GenreIds.Any())
+                await _filmRepository.AddGenresAsync(film.Id, dto.GenreIds);
 
-            await _filmRepository.AddGenresAsync(film.Id, film.GenreIds);
             await _filmRepository.UpdateAsync(film);
 
             return await MapToDtoAsync(film);
@@ -118,9 +110,31 @@ namespace Application.Film.Services
             await _filmRepository.UpdateAsync(film);
         }
 
+        public async Task UpdatePersonsAsync(
+            int filmId,
+            IEnumerable<FilmPersonDto> persons)
+        {
+            var film = await _filmRepository.GetByIdAsync(filmId)
+                ?? throw new KeyNotFoundException("Фильм не найден");
+
+            var existing = await _filmPersonRepository.GetByFilmIdAsync(filmId);
+
+            foreach (var fp in existing)
+                await _filmPersonRepository.RemoveAsync(fp.FilmId, fp.PersonId, fp.Career);
+
+            foreach (var p in persons)
+            {
+                var fp = FilmPerson.Create(filmId, p.PersonId, p.Career);
+                await _filmPersonRepository.AddAsync(fp);
+            }
+        }
+
+
+
         private async Task<FilmDto> MapToDtoAsync(Domain.Entities.Film.Film film)
         {
             var genreIds = await _filmRepository.GetGenreIdsAsync(film.Id);
+            var persons = await _filmPersonRepository.GetByFilmIdAsync(film.Id);
 
             return new FilmDto
             {
@@ -135,7 +149,12 @@ namespace Application.Film.Services
                 Country = film.Country,
                 Rating = film.Rating.Average(),
                 AgeRestriction = film.AgeRestriction.Value,
-                GenreIds = genreIds.ToList()
+                GenreIds = genreIds.ToList(),
+                Persons = persons.Select(p => new FilmPersonDto
+                {
+                    PersonId = p.PersonId,
+                    Career = p.Career
+                }).ToList()
             };
         }
     }

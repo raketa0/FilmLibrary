@@ -1,26 +1,10 @@
-﻿
-namespace Domain.Entities.Film
+﻿namespace Domain.Entities.Film
 {
     public class Rating
     {
         public int Total { get; }
         public int Votes { get; }
 
-        public double Average()
-        {
-            if (Votes == 0)
-            {
-                return 0;
-            }
-
-            if (Votes < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(Votes), "Votes cannot be negative"); 
-            }
-
-            return Total / Votes;
-            
-        }
         private Rating(int total, int votes)
         {
             Total = total;
@@ -33,9 +17,17 @@ namespace Domain.Entities.Film
         public Rating Add(int value)
         {
             if (value < 1 || value > 10)
-                throw new ArgumentException("Rating must be between 1 and 10.");
+                throw new ArgumentException("Rating must be between 1 and 10");
 
             return new Rating(Total + value, Votes + 1);
+        }
+
+        public double Average()
+        {
+            if (Votes == 0)
+                return 0;
+
+            return (double)Total / Votes;
         }
     }
 }

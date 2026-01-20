@@ -1,5 +1,4 @@
-﻿
-namespace Domain.Entities.Person
+﻿namespace Domain.Entities.Person
 {
     public class Person
     {
@@ -10,7 +9,7 @@ namespace Domain.Entities.Person
         public DateTime DateOfBirth { get; private set; }
         public string? LinkToPhoto { get; private set; }
 
-        private Person() {}
+        private Person() { }
 
         private Person(
             string name,
@@ -24,7 +23,7 @@ namespace Domain.Entities.Person
             LinkToPhoto = linkToPhoto;
         }
 
-        public Person Create(
+        public static Person Create(
             string name,
             Career career,
             DateTime dateOfBirth,
@@ -33,7 +32,23 @@ namespace Domain.Entities.Person
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Person name is required.");
 
+            if (dateOfBirth > DateTime.UtcNow)
+                throw new ArgumentException("Invalid date of birth.");
+
             return new Person(name, career, dateOfBirth, linkToPhoto);
+        }
+
+        public void Update(
+            string name,
+            DateTime dateOfBirth,
+            string? linkToPhoto)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Person name is required.");
+
+            Name = name;
+            DateOfBirth = dateOfBirth;
+            LinkToPhoto = linkToPhoto;
         }
     }
 }

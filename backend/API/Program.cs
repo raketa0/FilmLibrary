@@ -2,6 +2,8 @@ using Application.Film.Interfaces;
 using Application.Film.Services;
 using Application.Genre.Interfaces;
 using Application.Genre.Services;
+using Application.Person.Interfaces;
+using Application.Person.Services;
 using Application.User.Interfaces;
 using Application.User.Services;
 using Domain.Repositories;
@@ -37,8 +39,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFilmRepository, FilmRepository>();
 builder.Services.AddScoped<IFilmService, FilmService>();
 
+builder.Services.AddScoped<IFilmPersonRepository, FilmPersonRepository>();
+
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
 builder.Services.AddScoped<IGenreService, GenreService>();
+
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonService, PersonService>();
 
 
 

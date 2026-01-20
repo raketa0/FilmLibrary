@@ -15,6 +15,8 @@ namespace Application.Film.DTOs
         public double Rating { get; set; }
         public int AgeRestriction { get; set; }
         public List<int> GenreIds { get; set; } = new();
+        public List<FilmPersonDto> Persons { get; set; } = new();
+
 
     }
 }

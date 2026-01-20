@@ -14,22 +14,23 @@ namespace Infrastructure.Configurations
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.Id)
-                   .HasColumnName("ID_Person")
-                   .ValueGeneratedOnAdd();
+                .HasColumnName("ID_Person")
+                .ValueGeneratedOnAdd();
 
             builder.Property(p => p.Name)
-                   .HasMaxLength(200)
-                   .IsRequired();
+                .HasMaxLength(200)
+                .IsRequired();
 
             builder.Property(p => p.Career)
-                   .HasConversion<int>()
-                   .IsRequired();
+                .HasConversion<int>()
+                .IsRequired();
 
             builder.Property(p => p.DateOfBirth)
-                   .IsRequired();
+                .IsRequired();
 
             builder.Property(p => p.LinkToPhoto)
-                   .HasMaxLength(500);
+                .HasMaxLength(500);
+
         }
     }
 }
