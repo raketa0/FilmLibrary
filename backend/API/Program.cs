@@ -2,6 +2,8 @@ using Application.Film.Interfaces;
 using Application.Film.Services;
 using Application.Genre.Interfaces;
 using Application.Genre.Services;
+using Application.HistoryOfViewFilm.Interfaces;
+using Application.HistoryOfViewFilm.Services;
 using Application.Person.Interfaces;
 using Application.Person.Services;
 using Application.User.Interfaces;
@@ -46,6 +48,10 @@ builder.Services.AddScoped<IGenreService, GenreService>();
 
 builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IPersonService, PersonService>();
+
+builder.Services.AddScoped<IHistoryOfViewFilmRepository, HistoryOfViewFilmRepository>();
+builder.Services.AddScoped<IHistoryOfViewFilmService, HistoryOfViewFilmService>();
+
 
 
 
