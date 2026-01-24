@@ -1,4 +1,3 @@
-// src/components/AvatarDropzone.tsx
 import React, { useRef, useState, useCallback } from 'react';
 
 type Props = {

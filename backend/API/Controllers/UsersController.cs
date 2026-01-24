@@ -19,26 +19,43 @@ namespace FilmLibrary.API.Controllers
 			_storePath = "D:\\studies\\FilmLibrary\\store";
 		}
 
-		[HttpPost("register")]
-		public async Task<ActionResult<UserDto>> Register([FromBody] RegisterUserDto dto)
-		{
-			try
-			{
-				var user = await _service.RegisterAsync(dto);
+        [HttpPost("register")]
+        public async Task<ActionResult<UserDto>> Register([FromForm] RegisterUserDto dto, IFormFile? avatar)
+        {
+            try
+            {
+                var user = await _service.RegisterAsync(dto);
 
-				var userFolder = Path.Combine(_storePath, user.Email, "user");
-				if (!Directory.Exists(userFolder))
-					Directory.CreateDirectory(userFolder);
+                var userFolder = Path.Combine(_storePath, user.Email, "user");
+                Directory.CreateDirectory(userFolder);
 
-				return Ok(user);
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
-		}
+                string? relativePath = null;
 
-		[HttpPost("login")]
+                if (avatar != null)
+                {
+                    var fileExtension = Path.GetExtension(avatar.FileName);
+                    var fileName = "avatar" + fileExtension;
+                    var filePath = Path.Combine(userFolder, fileName);
+
+                    using var stream = new FileStream(filePath, FileMode.Create);
+                    await avatar.CopyToAsync(stream);
+
+                    relativePath = Path.Combine(user.Email, "user", fileName).Replace("\\", "/");
+                    await _service.UpdateAvatarAsync(user.Id, relativePath);
+                }
+
+                user.LinkToAvatar = relativePath;
+
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPost("login")]
 		public async Task<ActionResult<UserDto?>> Login([FromBody] LoginDto dto)
 		{
 			var user = await _service.LoginAsync(dto);
@@ -96,39 +113,41 @@ namespace FilmLibrary.API.Controllers
 			await _service.DeleteAsync(id);
 			return Ok(new { success = true });
 		}
-        /* Загрузка аватара пользователя 
-        [HttpPost("{id}/UploadAvatar")]
-		public async Task<IActionResult> UploadAvatar(Guid id, [FromForm] IFormFile avatar)
-		{
-			if (avatar == null || avatar.Length == 0)
-				return BadRequest("Файл не выбран");
 
-			var user = await _service.GetByIdAsync(id);
-			if (user == null) return NotFound("Пользователь не найден");
 
-			try
-			{
-				var userFolder = Path.Combine(_storePath, user.Email, "user");
-				if (!Directory.Exists(userFolder))
-					Directory.CreateDirectory(userFolder);
+        [HttpPost("{id}/avatar")]
+        public async Task<IActionResult> UploadAvatar(Guid id, [FromForm] IFormFile avatar)
+        {
+            if (avatar == null || avatar.Length == 0)
+                return BadRequest("Файл не выбран");
 
-				var fileExtension = Path.GetExtension(avatar.FileName);
-				var fileName = $"avatar{fileExtension}";
-				var filePath = Path.Combine(userFolder, fileName);
+            var user = await _service.GetByIdAsync(id);
+            if (user == null) return NotFound("Пользователь не найден");
 
-				using var stream = new FileStream(filePath, FileMode.Create);
-				await avatar.CopyToAsync(stream);
+            try
+            {
+                var userFolder = Path.Combine(_storePath, user.Email, "user");
+                if (!Directory.Exists(userFolder))
+                    Directory.CreateDirectory(userFolder);
 
-				var relativePath = Path.Combine(user.Email, "user", fileName).Replace("\\", "/");
-				await _service.UpdateAvatarAsync(id, relativePath);
+                var fileExtension = Path.GetExtension(avatar.FileName);
+                var fileName = "avatar" + fileExtension;
+                var filePath = Path.Combine(userFolder, fileName);
 
-				return Ok(new { success = true, linkToAvatar = relativePath });
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Ошибка загрузки аватара: {ex.Message}");
-			}
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await avatar.CopyToAsync(stream);
+
+                var relativePath = Path.Combine(user.Email, "user", fileName).Replace("\\", "/");
+                await _service.UpdateAvatarAsync(id, relativePath);
+
+                return Ok(new { success = true, linkToAvatar = relativePath });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Ошибка загрузки аватара: {ex.Message}");
+            }
         }
-		*/
-	}
+
+
+    }
 }

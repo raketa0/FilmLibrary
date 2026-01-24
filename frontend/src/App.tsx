@@ -5,6 +5,10 @@ import ProfilePage from './pages/ProfilePage';
 import Dashboard from './pages/Dashboard';
 import Header from './components/Header';
 import { useAuthStore } from './store/authStore';
+import FilmsPage from './pages/FilmsPage';
+import CreateFilmPage from './pages/CreateFilmPage';
+import FilmPage from './pages/FilmPage';
+import MyFilmsPage from './pages/MyFilmsPage';
 
 const Protected: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const user = useAuthStore((s: { user: any; }) => s.user);
@@ -13,6 +17,7 @@ const Protected: React.FC<{ children: JSX.Element }> = ({ children }) => {
 };
 
 export default function App() {
+  const userId = useAuthStore((s: { user: any; }) => s.user?.id);
   return (
     <div className="min-h-screen">
       <Header />
@@ -21,7 +26,11 @@ export default function App() {
           <Route path="/" element={<AuthPage />} />
           <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
           <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/films" element={<FilmsPage />} />
+          <Route path="/films/create" element={<CreateFilmPage />} />
+          <Route path="/films/:id" element={<FilmPage />} />
+          <Route path="*" element={<Navigate to="/films" replace />} />
+          <Route path="/my-films" element={<MyFilmsPage userId={userId} />} />
         </Routes>
       </main>
     </div>

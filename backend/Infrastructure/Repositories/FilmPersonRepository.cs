@@ -18,13 +18,13 @@ public class FilmPersonRepository : IFilmPersonRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task RemoveAsync(int filmId, int personId, Career career)
+    public async Task RemoveAsync(int filmId, int personId, int career)
     {
         var fp = await _context.FilmPersons
             .FirstOrDefaultAsync(x =>
                 x.FilmId == filmId &&
                 x.PersonId == personId &&
-                x.Career == career);
+                x.CareerId == career);
 
         if (fp != null)
         {

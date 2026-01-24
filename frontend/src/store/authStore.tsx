@@ -12,7 +12,7 @@ type AuthResponse = {
 type State = {
   user: UserDto | null;
   setUser: (user: UserDto | null) => void;
-  register: (payload: RegisterDto) => Promise<AuthResponse>;
+  register: (payload: RegisterDto, avatarFile?: File | null) => Promise<AuthResponse>;
   login: (payload: LoginDto) => Promise<AuthResponse>;
   logout: () => void;
   updateProfile: (id: string, payload: UpdateProfileDto, avatarFile?: File | null) => Promise<AuthResponse>;
@@ -38,17 +38,19 @@ export const useAuthStore = create<State>((set, get) => ({
     else localStorage.removeItem('fl_user');
   },
 
-  register: async (payload) => {
-    try {
-      const data = await usersApi.register(payload); // UserDto
-      set({ user: data });
-      localStorage.setItem('fl_user', JSON.stringify(data));
-      return { success: true, user: data };
-    } catch (e: any) {
-      const msg = e?.response?.data || e?.message || 'Ошибка регистрации';
-      return { success: false, error: typeof msg === 'string' ? msg : JSON.stringify(msg) };
-    }
-  },
+  register: async (payload, avatarFile) => {  // ← добавляем avatarFile
+  try {
+    const fileToSend = avatarFile ?? undefined;
+    const data = await usersApi.register(payload, fileToSend); // FormData + backend
+    set({ user: data });
+    localStorage.setItem('fl_user', JSON.stringify(data));
+    return { success: true, user: data };
+  } catch (e: any) {
+    const msg = e?.response?.data || e?.message || 'Ошибка регистрации';
+    return { success: false, error: typeof msg === 'string' ? msg : JSON.stringify(msg) };
+  }
+},
+
 
   login: async (payload) => {
     try {
@@ -92,18 +94,22 @@ export const useAuthStore = create<State>((set, get) => ({
   },
 
   uploadAvatar: async (id, file) => {
-    try {
-      const uploadRes = await usersApi.uploadAvatar(id, file);
-      // after upload we should refresh user from server to get updated LinkToAvatar
-      const updatedUser = await usersApi.getUser(id);
-      set({ user: updatedUser });
-      localStorage.setItem('fl_user', JSON.stringify(updatedUser));
-      return { success: true, user: updatedUser };
-    } catch (e: any) {
-      const msg = e?.response?.data || e?.message || 'Ошибка загрузки аватара';
-      return { success: false, error: typeof msg === 'string' ? msg : JSON.stringify(msg) };
-    }
-  },
+  try {
+    // загрузка на сервер
+    await usersApi.uploadAvatar(id, file);
+
+    // ✅ обновляем пользователя с сервера
+    const updatedUser = await usersApi.getUser(id);
+
+    set({ user: updatedUser });
+    localStorage.setItem('fl_user', JSON.stringify(updatedUser));
+
+    return { success: true, user: updatedUser };
+  } catch (e: any) {
+    const msg = e?.response?.data || e?.message || 'Ошибка загрузки аватара';
+    return { success: false, error: typeof msg === 'string' ? msg : JSON.stringify(msg) };
+  }
+},
 
   deleteAccount: async (id) => {
     try {

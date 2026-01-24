@@ -55,18 +55,24 @@ namespace Infrastructure.Repositories
             IQueryable<Film> query = _context.Films;
 
             if (!string.IsNullOrWhiteSpace(name))
+            {
                 query = query.Where(f => f.Name.Contains(name));
+            }
 
             if (genreIds != null && genreIds.Any())
             {
                 query = query.Where(f =>
-                    _context.FilmGenres.Any(fg =>
-                        fg.FilmId == f.Id &&
-                        genreIds.Contains(fg.GenreId)));
+                    _context.FilmGenres
+                        .Where(fg => fg.FilmId == f.Id)
+                        .Any(fg => genreIds.Contains(fg.GenreId))
+                );
             }
+
 
             return await query.ToListAsync();
         }
+
+
 
         public async Task AddGenresAsync(int filmId, IEnumerable<int> genreIds)
         {
@@ -96,14 +102,17 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task AddPersonsAsync(int filmId, IEnumerable<(int personId, Career career)> persons)
+        public async Task AddPersonsAsync(
+            int filmId,
+            IEnumerable<(int personId, int careerId)> persons)
         {
             var filmPersons = persons.Select(p =>
-                FilmPerson.Create(filmId, p.personId, p.career));
+                FilmPerson.Create(filmId, p.personId, p.careerId));
 
             _context.FilmPersons.AddRange(filmPersons);
             await _context.SaveChangesAsync();
         }
+
 
 
         public async Task RemovePersonsAsync(int filmId)

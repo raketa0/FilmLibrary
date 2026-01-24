@@ -16,13 +16,19 @@ namespace Infrastructure.Repositories
 
         public async Task<IEnumerable<Person>> GetAllAsync()
         {
-            return await _context.Persons.AsNoTracking().ToListAsync();
+            return await _context.Persons
+                .Include(p => p.Career)
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<Person?> GetByIdAsync(int id)
         {
-            return await _context.Persons.FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.Persons
+                .Include(p => p.Career)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
+
 
         public async Task AddAsync(Person person)
         {

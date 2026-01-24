@@ -11,22 +11,16 @@ namespace Infrastructure.Configurations
         {
             builder.ToTable("Film_Person");
 
-            builder.HasKey(fp => new 
-            { 
-                fp.FilmId, 
+            builder.HasKey(fp => new
+            {
+                fp.FilmId,
                 fp.PersonId,
-                fp.Career 
+                fp.CareerId,
             });
 
-            builder.Property(fp => fp.FilmId)
-                .HasColumnName("ID_Film");
-
-            builder.Property(fp => fp.PersonId)
-                .HasColumnName("ID_Person");
-
-            builder.Property(fp => fp.Career)
-                .HasConversion<int>();
-
+            builder.Property(fp => fp.FilmId).HasColumnName("ID_Film");
+            builder.Property(fp => fp.PersonId).HasColumnName("ID_Person");
+            builder.Property(fp => fp.CareerId).HasColumnName("ID_Career");
         }
     }
 }

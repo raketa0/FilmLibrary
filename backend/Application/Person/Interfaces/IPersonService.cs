@@ -9,5 +9,7 @@ namespace Application.Person.Interfaces
         Task<PersonDto> CreateAsync(CreatePersonDto dto);
         Task<PersonDto> UpdateAsync(int id, UpdatePersonDto dto);
         Task DeleteAsync(int id);
+        Task UpdatePhotoAsync(int personId, string path);
+
     }
 }

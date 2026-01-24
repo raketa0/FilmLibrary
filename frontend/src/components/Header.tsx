@@ -21,6 +21,9 @@ export default function Header() {
             <>
               <Link to="/dashboard" className="px-3 py-1 rounded-md bg-white/6 hover:bg-white/8">Дашборд</Link>
               <Link to="/profile" className="px-3 py-1 rounded-md bg-white/6 hover:bg-white/8">Профиль</Link>
+              <Link to="/films">Фильмы</Link>
+              <Link to="/films/create">Создать фильм</Link>
+
               <button onClick={() => { logout(); nav('/'); }} className="px-3 py-1 rounded-md bg-red-600/80 hover:bg-red-500 transition">Выйти</button>
             </>
           ) : (

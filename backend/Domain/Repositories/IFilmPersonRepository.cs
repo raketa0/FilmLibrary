@@ -4,6 +4,6 @@ using Domain.Entities.Person;
 public interface IFilmPersonRepository
 {
     Task AddAsync(FilmPerson filmPerson);
-    Task RemoveAsync(int filmId, int personId, Career career);
+    Task RemoveAsync(int filmId, int personId, int career);
     Task<IEnumerable<FilmPerson>> GetByFilmIdAsync(int filmId);
 }

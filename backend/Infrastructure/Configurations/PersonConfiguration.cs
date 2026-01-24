@@ -1,5 +1,4 @@
-﻿
-using Domain.Entities.Person;
+﻿using Domain.Entities.Person;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,24 +12,16 @@ namespace Infrastructure.Configurations
 
             builder.HasKey(p => p.Id);
 
-            builder.Property(p => p.Id)
-                .HasColumnName("ID_Person")
-                .ValueGeneratedOnAdd();
+            builder.Property(p => p.Id).HasColumnName("ID_Person");
+            builder.Property(p => p.Name).HasColumnName("Name").IsRequired();
+            builder.Property(p => p.CareerId).HasColumnName("ID_Career");
+            builder.Property(p => p.DateOfBirth).HasColumnName("DateOfBirth");
+            builder.Property(p => p.LinkToPhoto).HasColumnName("LinkToPhoto");
 
-            builder.Property(p => p.Name)
-                .HasMaxLength(200)
-                .IsRequired();
-
-            builder.Property(p => p.Career)
-                .HasConversion<int>()
-                .IsRequired();
-
-            builder.Property(p => p.DateOfBirth)
-                .IsRequired();
-
-            builder.Property(p => p.LinkToPhoto)
-                .HasMaxLength(500);
-
+            builder.HasOne(p => p.Career)
+                   .WithMany()
+                   .HasForeignKey(p => p.CareerId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

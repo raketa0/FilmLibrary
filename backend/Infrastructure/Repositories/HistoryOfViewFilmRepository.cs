@@ -33,6 +33,12 @@ namespace Infrastructure.Repositories
                 .Where(h => h.UserId == userId)
                 .ToListAsync();
         }
+
+        public async Task<int> CountViewsByFilmIdAsync(int filmId)
+        {
+            return await _context.HistoryOfViews
+                .CountAsync(h => h.FilmId == filmId);
+        }
     }
 
 }

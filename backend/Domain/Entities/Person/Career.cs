@@ -1,10 +1,15 @@
-﻿
-
-namespace Domain.Entities.Person
+﻿namespace Domain.Entities.Person
 {
-    public enum Career
+    public class Career
     {
-        Actor = 1,
-        Director = 2
+        public int Id { get; private set; }
+        public string Name { get; private set; } = null!;
+
+        private Career() { }
+
+        public Career(string name)
+        {
+            Name = name;
+        }
     }
 }

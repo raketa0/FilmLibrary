@@ -12,6 +12,7 @@ namespace Domain.Repositories
         Task AddAsync(HistoryOfViewFilm history);
         Task<HistoryOfViewFilm?> GetAsync(Guid userId, int filmId);
         Task<IEnumerable<HistoryOfViewFilm>> GetByUserIdAsync(Guid userId);
+        Task<int> CountViewsByFilmIdAsync(int filmId);
     }
 
 }

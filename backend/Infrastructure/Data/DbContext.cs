@@ -18,6 +18,7 @@ namespace Infrastructure.Data
         public DbSet<Person> Persons { get; set; } = null!;
         public DbSet<FilmPerson> FilmPersons { get; set; } = null!;
         public DbSet<HistoryOfViewFilm> HistoryOfViews { get; set; } = null!;
+        public DbSet<Career> Careers { get; set; } = null!;
 
 
         public FilmLibraryDbContext(DbContextOptions<FilmLibraryDbContext> options)
@@ -34,6 +35,8 @@ namespace Infrastructure.Data
             modelBuilder.ApplyConfiguration(new PersonConfiguration());
             modelBuilder.ApplyConfiguration(new FilmPersonConfiguration());
             modelBuilder.ApplyConfiguration(new HistoryOfViewFilmConfiguration());
+            modelBuilder.ApplyConfiguration(new CareerConfiguration());
+
 
             base.OnModelCreating(modelBuilder);
         }

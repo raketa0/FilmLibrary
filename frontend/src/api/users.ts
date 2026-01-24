@@ -4,10 +4,35 @@ import type { RegisterDto, LoginDto, UpdateProfileDto, UserDto } from '../types/
 
 const API = '/users';
 
-export async function register(payload: RegisterDto): Promise<UserDto> {
-  const { data } = await client.post<UserDto>(`${API}/register`, payload);
-  return data;
-}
+export const register = async (data: RegisterDto, avatarFile?: File): Promise<UserDto> => {
+  const formData = new FormData();
+  formData.append('name', data.name);
+  formData.append('email', data.email);
+  formData.append('password', data.password);
+  if (data.dateOfBirth) formData.append('dateOfBirth', data.dateOfBirth);
+  if (avatarFile) formData.append('avatar', avatarFile);
+
+  const res = await fetch('http://localhost:5173/api/users/register', {
+    method: 'POST',
+    body: formData, // ❌ НЕ JSON
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+};
+
+export const uploadAvatar = async (id: string, file: File) => {
+  const formData = new FormData();
+  formData.append('avatar', file);
+
+  const res = await fetch(`http://localhost:5173/api/users/${id}/avatar`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+};
 
 export async function login(payload: LoginDto): Promise<UserDto> {
   const { data } = await client.post<UserDto>(`${API}/login`, payload);
@@ -24,15 +49,6 @@ export async function updateProfile(id: string, payload: UpdateProfileDto): Prom
   return data;
 }
 
-// upload avatar via multipart/form-data; backend expects field "avatar"
-export async function uploadAvatar(id: string, file: File): Promise<{ linkToAvatar: string }> {
-  const fd = new FormData();
-  fd.append('avatar', file);
-  const { data } = await client.post<{ linkToAvatar: string }>(`${API}/${id}/UploadAvatar`, fd, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-  return data;
-}
 
 export async function deleteAccount(id: string): Promise<void> {
   await client.delete(`${API}/${id}`);

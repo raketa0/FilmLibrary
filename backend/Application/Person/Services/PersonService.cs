@@ -1,7 +1,7 @@
 ﻿using Application.Person.DTOs;
 using Application.Person.Interfaces;
-using Domain.Entities.Person;
 using Domain.Repositories;
+using PersonEntity = Domain.Entities.Person.Person;
 
 namespace Application.Person.Services
 {
@@ -30,9 +30,9 @@ namespace Application.Person.Services
 
         public async Task<PersonDto> CreateAsync(CreatePersonDto dto)
         {
-            var person = Domain.Entities.Person.Person.Create(
+            var person = PersonEntity.Create(
                 dto.Name,
-                (Career)dto.Career,
+                dto.CareerId,
                 dto.DateOfBirth,
                 dto.LinkToPhoto);
 
@@ -59,11 +59,22 @@ namespace Application.Person.Services
             await _repository.DeleteAsync(person);
         }
 
-        private static PersonDto Map(Domain.Entities.Person.Person p) => new()
+        public async Task UpdatePhotoAsync(int personId, string path)
+        {
+            var person = await _repository.GetByIdAsync(personId);
+            if (person == null) throw new KeyNotFoundException("Person not found");
+
+            person.Update(person.Name, person.DateOfBirth, path);
+            await _repository.UpdateAsync(person);
+        }
+
+
+        private static PersonDto Map(PersonEntity p) => new()
         {
             Id = p.Id,
             Name = p.Name,
-            Career = p.Career.ToString()
+            Career = p.Career?.Name ?? "Неизвестно"
         };
+
     }
 }

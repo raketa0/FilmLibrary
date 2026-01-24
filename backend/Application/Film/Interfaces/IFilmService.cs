@@ -1,9 +1,5 @@
 ﻿using Application.Film.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Application.Film.Interfaces
 {
@@ -18,6 +14,8 @@ namespace Application.Film.Interfaces
         Task RateAsync(int filmId, int value);
         Task UpdatePersonsAsync(
             int filmId, IEnumerable<FilmPersonDto> persons);
-
+        Task<IEnumerable<MyFilmStatsDto>> GetMyFilmsStatsAsync(Guid userId);
+        Task AddViewAsync(int filmId, Guid userId);
+    
     }
 }

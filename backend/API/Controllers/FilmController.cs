@@ -74,6 +74,21 @@ namespace API.Controllers
             return NoContent();
         }
 
+        [HttpGet("my/{userId}")]
+        public async Task<IActionResult> GetMyFilms(Guid userId)
+        {
+            var stats = await _filmService.GetMyFilmsStatsAsync(userId);
+            return Ok(stats);
+        }
+
+        [HttpPost("{id:int}/view")]
+        public async Task<IActionResult> AddView(int id)
+        {
+            var userId = Guid.Parse(User.FindFirst("sub")!.Value);
+
+            await _filmService.AddViewAsync(id, userId);
+            return Ok();
+        }
 
     }
 }
