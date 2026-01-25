@@ -2,16 +2,27 @@ import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import type { LoginDto } from '../types/UserDto';
+import { useAuthContext } from './AuthContext';
 
 export default function LoginForm() {
   const { register, handleSubmit, formState } = useForm<LoginDto>();
   const auth = useAuth();
   const navigate = useNavigate();
+  const { setUser } = useAuthContext();
 
   const onSubmit = async (data: LoginDto) => {
     const res = await auth.login(data);
-    if (!res.success) alert(res.error || 'Ошибка входа');
-    else navigate('/dashboard');
+    if (!res.success) {
+      alert(res.error || 'Ошибка входа');
+      return;
+    }
+
+    if (res.user) {
+      setUser(res.user);
+      localStorage.setItem('user', JSON.stringify(res.user));
+      localStorage.setItem('user_id', res.user.id);
+      navigate('/dashboard');
+    }
   };
 
   return (

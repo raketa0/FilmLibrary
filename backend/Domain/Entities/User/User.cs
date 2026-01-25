@@ -5,6 +5,8 @@ namespace Domain.Entities.User
 {
     public class User : AggregateRoot<Guid>
     {
+        public ICollection<HistoryOfViewFilm.HistoryOfViewFilm> HistoryOfViews { get; private set; } = 
+            new List<HistoryOfViewFilm.HistoryOfViewFilm>();
         public new Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public Email Email { get; set; }

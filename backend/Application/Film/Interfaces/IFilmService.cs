@@ -15,7 +15,7 @@ namespace Application.Film.Interfaces
         Task UpdatePersonsAsync(
             int filmId, IEnumerable<FilmPersonDto> persons);
         Task<IEnumerable<MyFilmStatsDto>> GetMyFilmsStatsAsync(Guid userId);
-        Task AddViewAsync(int filmId, Guid userId);
+        Task AddViewAsync(int filmId, AddViewDto dto);
     
     }
 }

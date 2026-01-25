@@ -53,3 +53,13 @@ export async function updateProfile(id: string, payload: UpdateProfileDto): Prom
 export async function deleteAccount(id: string): Promise<void> {
   await client.delete(`${API}/${id}`);
 }
+
+export async function getCurrentUser(): Promise<UserDto> {
+try {
+const { data } = await client.get(`${API}/me`);
+return data;
+} catch (err: any) {
+console.error("Ошибка получения текущего пользователя:", err);
+throw new Error(err?.response?.data || err?.message || "Не удалось получить текущего пользователя");
+}
+}

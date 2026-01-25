@@ -1,6 +1,7 @@
 ﻿using Application.Film.DTOs;
 using Application.Film.Interfaces;
 using Domain.Entities.Film;
+using Domain.Entities.HistoryOfViewFilm;
 using Domain.Entities.Person;
 using Domain.Repositories;
 
@@ -177,21 +178,25 @@ namespace Application.Film.Services
         }
 
 
-    public async Task AddViewAsync(int filmId, Guid userId)
-    {
-        var film = await _filmRepository.GetByIdAsync(filmId)
-            ?? throw new KeyNotFoundException("Фильм не найден");
+        public async Task AddViewAsync(int filmId, AddViewDto dto)
+        {
+            var history = Domain.Entities.HistoryOfViewFilm.HistoryOfViewFilm.Create(
+                dto.UserId,      
+                filmId,            
+                DateTime.UtcNow,  
+                dto.Duration       
+            );
 
-        var view = Domain.Entities.HistoryOfViewFilm.HistoryOfViewFilm.Create(
-            userId,
-            filmId,
-            DateTime.UtcNow,
-            duration: 0
-        );
+            if (dto.Evaluation.HasValue)
+            {
+                var evaluation = Evaluation.Create(dto.Evaluation.Value);
+                history.Rate(evaluation);
+            }
 
-        await _historyRepository.AddAsync(view);
-    }
-    private async Task<FilmDto> MapToDtoAsync(Domain.Entities.Film.Film film)
+            await _historyRepository.AddAsync(history);
+        }
+
+        private async Task<FilmDto> MapToDtoAsync(Domain.Entities.Film.Film film)
         {
             var genreIds = await _filmRepository.GetGenreIdsAsync(film.Id);
             var persons = await _filmPersonRepository.GetByFilmIdAsync(film.Id);

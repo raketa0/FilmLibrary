@@ -1,58 +1,107 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getFilm, rateFilm, addView } from "../api/films";
-import { getAllGenres } from "../api/genres";
-import { getAllPersons } from "../api/persons";
-import { resolveGenres, resolvePersons } from "../utils/resolve";
+import { getFilm, addView, rateFilm } from "../api/films";
+import { useAuthContext } from "../components/AuthContext";
 import type { FilmDto } from "../types/FilmDto";
 
 const BASE_URL = "http://localhost:5084/store";
 
 export default function FilmPage() {
   const { id } = useParams<{ id: string }>();
-  const [film, setFilm] = useState<FilmDto | null>(null);
-  const [genres, setGenres] = useState<any[]>([]);
-  const [persons, setPersons] = useState<any[]>([]);
-  const [rate, setRate] = useState(0);
-  const [rated, setRated] = useState(false);
+  const { user } = useAuthContext();
 
-  useEffect(() => {
-    getAllGenres().then(setGenres);
-    getAllPersons().then(setPersons);
-  }, []);
+  const userId = user?.id ?? localStorage.getItem("user_id") ?? null;
+
+  const [film, setFilm] = useState<FilmDto | null>(null);
+  const [rate, setRate] = useState<number | null>(null);
+  const [rated, setRated] = useState(false);
+  const [showRateSlider, setShowRateSlider] = useState(false);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const startTimeRef = useRef<number>(0);
+  const watchDataRef = useRef<{ duration: number; evaluation?: number | null } | null>(null);
 
   useEffect(() => {
     if (!id) return;
-
-    const loadFilm = async () => {
-      const filmData = await getFilm(+id);
-      setFilm(filmData);
-
-      if ((filmData as any).userRate) setRated(true);
-
-      try {
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-          await addView(+id, userId);
-        }
-      } catch (err) {
-        console.error(err);
+    getFilm(+id).then((f) => {
+      setFilm(f);
+      if ((f as any).userRate) {
+        setRated(true);
+        setRate((f as any).userRate);
       }
-    };
-
-    loadFilm();
+    });
   }, [id]);
 
-  if (!film) return <div>Загрузка...</div>;
+  const handlePlay = () => {
+    startTimeRef.current = Math.floor(videoRef.current?.currentTime ?? 0);
+    if (!rated) setShowRateSlider(true);
+  };
 
-  const filmGenres = resolveGenres(film.genreIds, genres);
-  const filmPersons = resolvePersons(film.persons, persons);
+  const handlePauseOrExit = () => {
+    if (!videoRef.current) return;
+    const duration = Math.floor(videoRef.current.currentTime - startTimeRef.current);
+    if (duration <= 0) return;
+    watchDataRef.current = {
+      duration,
+      evaluation: rated && rate !== null ? rate : undefined,
+    };
+  };
+
+  const handleSendView = async () => {
+    if (!film || !userId || !watchDataRef.current) return;
+    try {
+      const { duration, evaluation } = watchDataRef.current;
+      await addView(film.id, userId, duration, evaluation ?? undefined);
+      watchDataRef.current = null;
+      console.log("Просмотр отправлен на сервер");
+    } catch (err) {
+      console.error("Ошибка addView:", err);
+    }
+  };
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+
+    videoEl.addEventListener("play", handlePlay);
+    videoEl.addEventListener("pause", handlePauseOrExit);
+    videoEl.addEventListener("ended", handlePauseOrExit);
+    window.addEventListener("beforeunload", handleSendView);
+
+    return () => {
+      videoEl.removeEventListener("play", handlePlay);
+      videoEl.removeEventListener("pause", handlePauseOrExit);
+      videoEl.removeEventListener("ended", handlePauseOrExit);
+      handleSendView();
+      window.removeEventListener("beforeunload", handleSendView);
+    };
+  }, [film, userId, rated, rate]);
 
   const submitRate = async () => {
-    await rateFilm(film.id, rate);
+    if (!userId || rated || rate === null) return;
+
     setRated(true);
-    setFilm({ ...film, rating: rate });
+    setShowRateSlider(false);
+
+    if (watchDataRef.current) watchDataRef.current.evaluation = rate;
+
+    try {
+      await rateFilm(film!.id, rate);
+      // после успешной оценки подгружаем актуальный рейтинг с сервера
+      const updatedFilm = await getFilm(film!.id);
+      setFilm(updatedFilm);
+    } catch (err) {
+      console.error("Ошибка отправки оценки:", err);
+    }
   };
+
+  const cancelRate = () => {
+    setShowRateSlider(false);
+    if (watchDataRef.current) watchDataRef.current.evaluation = undefined;
+  };
+
+  if (!userId) return <p className="opacity-60">Пожалуйста, войдите в систему, чтобы смотреть фильм</p>;
+  if (!film) return <div>Загрузка...</div>;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -60,53 +109,32 @@ export default function FilmPage() {
         <img src={`${BASE_URL}/${film.linkToPoster}`} className="rounded-xl" />
         <div className="col-span-2 space-y-3">
           <h1 className="text-3xl font-bold">{film.name}</h1>
-          <div className="flex gap-4 text-sm opacity-80">
-            <span>{film.yearOfRelease}</span>
-            <span>{film.duration} мин</span>
-            <span>{film.country}</span>
-            <span>{film.ageRestriction}+</span>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {filmGenres.map((g) => (
-              <span key={g.id} className="px-2 py-1 bg-gray-800 rounded text-sm">
-                {g.name}
-              </span>
-            ))}
-          </div>
           <p className="opacity-90">{film.description}</p>
-          <div className="space-y-1">
-            {filmPersons.map((p, i) => (
-              p && (
-                <div key={i} className="text-sm">
-                  {p.career}: {p.name}
-                </div>
-              )
-            ))}
-          </div>
-          <p className="text-lg">⭐ {film.rating ?? "—"}</p>
-          {!rated && (
-            <div className="flex items-center gap-2">
+          <p className="text-lg">⭐ {film.rating?.toFixed(1) ?? "—"}</p>
+
+          {showRateSlider && !rated && (
+            <div className="flex items-center gap-2 mt-2">
               <input
-                type="number"
+                type="range"
                 min={1}
                 max={10}
-                value={rate}
+                value={rate ?? 5}
                 onChange={(e) => setRate(+e.target.value)}
-                className="w-20 px-2 py-1 bg-gray-800 rounded"
+                className="w-40"
               />
-              <button
-                onClick={submitRate}
-                className="px-4 py-1 bg-green-600 rounded"
-              >
-                Оценить
-              </button>
+              <span>{rate ?? 5}</span>
+              <button onClick={submitRate} className="px-4 py-1 bg-green-600 rounded">Оценить</button>
+              <button onClick={cancelRate} className="px-4 py-1 bg-red-600 rounded">×</button>
             </div>
           )}
+
           {rated && <p className="opacity-60">Вы уже оценили фильм</p>}
         </div>
       </div>
+
       {film.linkToFilm && (
         <video
+          ref={videoRef}
           src={`${BASE_URL}/${film.linkToFilm}`}
           controls
           className="w-full max-h-[600px] rounded-xl bg-black"

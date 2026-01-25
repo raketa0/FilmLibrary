@@ -5,6 +5,7 @@ namespace Domain.Entities.HistoryOfViewFilm
 {
     public class HistoryOfViewFilm
     {
+        public int ID_History { get; private set; }
         public Guid UserId { get; private set; }
         public int FilmId { get; private set; }
 

@@ -2,6 +2,8 @@
 {
     public class Film
     {
+        public ICollection<HistoryOfViewFilm.HistoryOfViewFilm> HistoryOfViews { get; private set; } =
+            new List<HistoryOfViewFilm.HistoryOfViewFilm>();
         public int Id { get; private set; }
         public Guid CreatorId { get; private set; }
 

@@ -1,6 +1,7 @@
 ﻿using Application.Film.DTOs;
 using Application.Film.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace API.Controllers
 {
@@ -9,10 +10,12 @@ namespace API.Controllers
     public class FilmController : ControllerBase
     {
         private readonly IFilmService _filmService;
+        private readonly ILogger<FilmController> _logger;
 
-        public FilmController(IFilmService filmService)
+        public FilmController(IFilmService filmService, ILogger<FilmController> logger)
         {
             _filmService = filmService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -81,15 +84,14 @@ namespace API.Controllers
             return Ok(stats);
         }
 
-        [HttpPost("{id:int}/add-view")]
-        public async Task<IActionResult> AddView(int id, [FromQuery] Guid userId)
+        [HttpPost("{filmId}/add-view")]
+        public async Task<IActionResult> AddView(
+            int filmId,
+            [FromBody] AddViewDto dto
+        )
         {
-            // Проверяем, что пользователь передан
-            if (userId == Guid.Empty)
-                return BadRequest("Неверный идентификатор пользователя");
-
-            await _filmService.AddViewAsync(id, userId);
-            return Ok(new { success = true });
+            await _filmService.AddViewAsync(filmId, dto);
+            return Ok();
         }
 
     }

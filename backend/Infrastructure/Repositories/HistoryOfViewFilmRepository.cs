@@ -39,6 +39,8 @@ namespace Infrastructure.Repositories
             return await _context.HistoryOfViews
                 .CountAsync(h => h.FilmId == filmId);
         }
+
+
     }
 
 }
