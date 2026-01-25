@@ -73,8 +73,8 @@ namespace Application.Person.Services
         {
             Id = p.Id,
             Name = p.Name,
-            Career = p.Career?.Name ?? "Неизвестно"
+            Career = p.Career?.Name ?? "Неизвестно",
+            LinkToPhoto = p.LinkToPhoto
         };
-
     }
 }

@@ -2,7 +2,8 @@ export type PersonDto = {
   id: number;
   name: string;
   careerId: number;
-  careerName: string; // новый
+  careerName: string;
+  linkToPhoto?: string;
 };
 
 export type CreatePersonDto = {

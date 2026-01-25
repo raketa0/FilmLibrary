@@ -7,34 +7,26 @@ public class PersonFilesController : ControllerBase
 {
     private readonly IPersonService _personService;
     private readonly string _storePath = @"D:\studies\FilmLibrary\store";
+    private readonly string __storePath = @"D:\studies\FilmLibrary\store\persons";
 
     public PersonFilesController(IPersonService personService)
     {
         _personService = personService;
     }
 
-    [HttpGet("{personId:int}/photo")]
-    public async Task<IActionResult> GetPhoto(int personId)
+    [HttpGet("{id}/photo")]
+    public IActionResult GetPhoto(int id)
     {
-        var person = await _personService.GetByIdAsync(personId);
-        if (person == null || string.IsNullOrEmpty(person.LinkToPhoto))
-            return NotFound();
+        var folder = Path.Combine(_storePath, id.ToString());
+        var filePath = Path.Combine(folder, "avatar.png");
 
-        var filePath = Path.Combine(_storePath, person.LinkToPhoto.Replace("/", "\\"));
+
         if (!System.IO.File.Exists(filePath))
             return NotFound();
 
-        var ext = Path.GetExtension(filePath).ToLowerInvariant();
-        var contentType = ext switch
-        {
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png" => "image/png",
-            ".gif" => "image/gif",
-            _ => "application/octet-stream"
-        };
 
-        var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-        return File(fileBytes, contentType);
+        var bytes = System.IO.File.ReadAllBytes(filePath);
+        return File(bytes, "image/png");
     }
 
     [HttpPost("{personId:int}/files")]
@@ -56,3 +48,4 @@ public class PersonFilesController : ControllerBase
         return Ok(new { path = relativePath });
     }
 }
+
