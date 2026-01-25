@@ -81,13 +81,15 @@ namespace API.Controllers
             return Ok(stats);
         }
 
-        [HttpPost("{id:int}/view")]
-        public async Task<IActionResult> AddView(int id)
+        [HttpPost("{id:int}/add-view")]
+        public async Task<IActionResult> AddView(int id, [FromQuery] Guid userId)
         {
-            var userId = Guid.Parse(User.FindFirst("sub")!.Value);
+            // Проверяем, что пользователь передан
+            if (userId == Guid.Empty)
+                return BadRequest("Неверный идентификатор пользователя");
 
             await _filmService.AddViewAsync(id, userId);
-            return Ok();
+            return Ok(new { success = true });
         }
 
     }

@@ -1,5 +1,6 @@
 import { client } from './client';
 import type { CreateFilmDto, FilmDto, FilmPersonDto, UpdateFilmDto } from '../types/FilmDto';
+import axios from 'axios';
 
 const API = '/films';
 
@@ -94,6 +95,13 @@ export async function getViewHistory() {
   return data;
 }
 
-export async function addFilmView(id: number) {
-await client.post(`/films/${id}/view`);
+export async function addView(filmId: number, userId: string) {
+try {
+await axios.post(`http://localhost:5000/api/films/${filmId}/add-view`, null, {
+params: { userId }
+});
+console.log("Просмотр добавлен!");
+} catch (err) {
+console.error("Ошибка добавления просмотра:", err);
+}
 }

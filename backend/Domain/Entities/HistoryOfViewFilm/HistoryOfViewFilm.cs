@@ -1,4 +1,6 @@
-﻿
+﻿using Domain.Entities.User;
+using Domain.Entities.Film;
+
 namespace Domain.Entities.HistoryOfViewFilm
 {
     public class HistoryOfViewFilm
@@ -10,6 +12,9 @@ namespace Domain.Entities.HistoryOfViewFilm
         public int Duration { get; private set; }
 
         public Evaluation? Evaluation { get; private set; }
+
+        public User.User User { get; private set; } = null!;
+        public Film.Film Film { get; private set; } = null!;
 
         private HistoryOfViewFilm() {}
 

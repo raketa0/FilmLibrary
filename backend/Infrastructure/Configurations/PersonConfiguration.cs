@@ -11,7 +11,6 @@ namespace Infrastructure.Configurations
             builder.ToTable("Person");
 
             builder.HasKey(p => p.Id);
-
             builder.Property(p => p.Id).HasColumnName("ID_Person");
             builder.Property(p => p.Name).HasColumnName("Name").IsRequired();
             builder.Property(p => p.CareerId).HasColumnName("ID_Career");
