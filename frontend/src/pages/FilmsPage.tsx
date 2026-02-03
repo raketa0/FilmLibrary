@@ -11,13 +11,11 @@ export default function FilmsPage() {
   const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Получаем все фильмы и жанры при загрузке
   useEffect(() => {
     getAllFilms().then(setFilms);
     getAllGenres().then(setGenres);
   }, []);
 
-  // --- Автопоиск по названию + выбранным жанрам ---
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
       try {
@@ -29,12 +27,11 @@ export default function FilmsPage() {
       } catch (err) {
         console.error("Ошибка поиска фильмов:", err);
       }
-    }, 300); // задержка 300мс
+    }, 300); 
 
     return () => clearTimeout(delayDebounce);
   }, [searchName, selectedGenres]);
 
-  // --- Применить фильтр жанров (кнопка "Применить") ---
   const applyGenreFilter = async () => {
     try {
       const result = await searchFilms(
@@ -48,15 +45,12 @@ export default function FilmsPage() {
     }
   };
 
-  // --- Выбрать все жанры ---
   const selectAllGenres = () => setSelectedGenres(genres.map((g) => g.id));
 
-  // --- Очистить выбор жанров ---
   const clearGenres = () => setSelectedGenres([]);
 
   return (
     <div className="space-y-6">
-      {/* Заголовок и кнопка создания */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Фильмы</h1>
         <Link to="/films/create" className="text-blue-500 hover:underline">
@@ -64,7 +58,6 @@ export default function FilmsPage() {
         </Link>
       </div>
 
-      {/* Поиск по названию */}
       <input
         type="text"
         placeholder="Поиск по названию..."
@@ -73,7 +66,6 @@ export default function FilmsPage() {
         onChange={(e) => setSearchName(e.target.value)}
       />
 
-      {/* Кнопка открытия фильтра жанров */}
       <button
         onClick={() => setIsFilterOpen(true)}
         className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white mt-2"
@@ -140,7 +132,6 @@ export default function FilmsPage() {
         </div>
       )}
 
-      {/* --- Список фильмов --- */}
       {films.length === 0 && <p>Фильмы не найдены</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

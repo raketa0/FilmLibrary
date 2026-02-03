@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 const BASE_URL = "http://localhost:5084/store";
 
 export default function FilmCard({ film }: any) {
-  const rating = film.rating !== null && film.rating !== undefined
-    ? Number(film.rating).toFixed(1)
-    : "—";
+  const rating =
+    film.rating !== null && film.rating !== undefined
+      ? Number(film.rating).toFixed(1)
+      : "—";
 
   return (
     <Link
@@ -14,6 +15,7 @@ export default function FilmCard({ film }: any) {
     >
       <img
         src={`${BASE_URL}/${film.linkToPoster}`}
+        alt={film.name}
         className="w-full h-[260px] object-cover"
       />
 

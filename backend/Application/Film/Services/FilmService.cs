@@ -11,7 +11,7 @@ namespace Application.Film.Services
     {
         private readonly IFilmRepository _filmRepository;
         private readonly IFilmPersonRepository _filmPersonRepository;
-        private readonly IHistoryOfViewFilmRepository _historyRepository;
+        private readonly IHistoryOfViewFilmRepository _historyRepository = null!;
         public FilmService(IFilmRepository filmRepository, IFilmPersonRepository filmPersonRepository)
         {
             _filmRepository = filmRepository;

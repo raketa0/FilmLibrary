@@ -74,7 +74,6 @@ export default function CreateFilmPage() {
       ]);
 
       setSelectedPersons(prev => [...prev, { personId: created.id, careerId: created.careerId }]);
-
       setNewPerson({ name: "", careerId: newPerson.careerId, dateOfBirth: "", photo: null });
     } catch (err: any) {
       alert("Ошибка создания персонажа: " + (err.message || err));
@@ -112,62 +111,145 @@ export default function CreateFilmPage() {
 
   return (
     <div className="flex items-center justify-center py-10">
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-        className="max-w-3xl w-full card p-6 space-y-5">
-
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="max-w-3xl w-full card p-6 space-y-5"
+      >
         <h2 className="text-2xl font-bold">Добавить фильм</h2>
 
+        {/* Название */}
         <div>
-          <label className="text-sm text-white/70">Название</label>
-          <input className={inputStyle} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+          <label htmlFor="film-name" className="text-sm text-white/70">Название</label>
+          <input
+            id="film-name"
+            className={inputStyle}
+            value={form.name}
+            onChange={e => setForm({ ...form, name: e.target.value })}
+          />
         </div>
 
+        {/* Описание */}
         <div>
-          <label className="text-sm text-white/70">Описание</label>
-          <textarea className={`${inputStyle} h-28`} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+          <label htmlFor="film-description" className="text-sm text-white/70">Описание</label>
+          <textarea
+            id="film-description"
+            className={`${inputStyle} h-28`}
+            value={form.description}
+            onChange={e => setForm({ ...form, description: e.target.value })}
+          />
         </div>
 
+        {/* Год и длительность */}
         <div className="grid grid-cols-2 gap-4">
-          <input type="number" className={inputStyle} value={form.yearOfRelease} onChange={e => setForm({ ...form, yearOfRelease: +e.target.value })} placeholder="Год" />
-          <input type="number" className={inputStyle} value={form.duration} onChange={e => setForm({ ...form, duration: +e.target.value })} placeholder="Длительность" />
+          <div>
+            <label htmlFor="film-year" className="text-sm text-white/70">Год</label>
+            <input
+              id="film-year"
+              type="number"
+              className={inputStyle}
+              value={form.yearOfRelease}
+              onChange={e => setForm({ ...form, yearOfRelease: +e.target.value })}
+            />
+          </div>
+          <div>
+            <label htmlFor="film-duration" className="text-sm text-white/70">Длительность</label>
+            <input
+              id="film-duration"
+              type="number"
+              className={inputStyle}
+              value={form.duration}
+              onChange={e => setForm({ ...form, duration: +e.target.value })}
+            />
+          </div>
         </div>
 
-        <input className={inputStyle} value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} placeholder="Страна" />
-        <input type="number" className={inputStyle} value={form.ageRestriction} onChange={e => setForm({ ...form, ageRestriction: +e.target.value })} placeholder="Возраст" />
-
+        {/* Страна и возраст */}
         <div>
-          <label className="text-sm text-white/70">Жанры</label>
-          <div className="grid grid-cols-2 gap-2 mt-1 max-h-32 overflow-y-auto">
+          <label htmlFor="film-country" className="text-sm text-white/70">Страна</label>
+          <input
+            id="film-country"
+            className={inputStyle}
+            value={form.country}
+            onChange={e => setForm({ ...form, country: e.target.value })}
+          />
+        </div>
+        <div>
+          <label htmlFor="film-age" className="text-sm text-white/70">Возраст</label>
+          <input
+            id="film-age"
+            type="number"
+            className={inputStyle}
+            value={form.ageRestriction}
+            onChange={e => setForm({ ...form, ageRestriction: +e.target.value })}
+          />
+        </div>
+
+        {/* Жанры */}
+        <div>
+          <label htmlFor="film-genres" className="text-sm text-white/70">Жанры</label>
+          <div id="film-genres" className="grid grid-cols-2 gap-2 mt-1 max-h-32 overflow-y-auto">
             {genres.map(g => (
               <label key={g.id} className="flex items-center space-x-2">
-                <input type="checkbox" checked={selectedGenres.includes(g.id)} onChange={() =>
-                  setSelectedGenres(prev => prev.includes(g.id) ? prev.filter(id => id !== g.id) : [...prev, g.id])} />
+                <input
+                  type="checkbox"
+                  checked={selectedGenres.includes(g.id)}
+                  onChange={() =>
+                    setSelectedGenres(prev =>
+                      prev.includes(g.id) ? prev.filter(id => id !== g.id) : [...prev, g.id]
+                    )
+                  }
+                />
                 <span>{g.name}</span>
               </label>
             ))}
           </div>
         </div>
 
+        {/* Персонажи */}
         <div>
-          <label className="text-sm text-white/70">Выбрать персонажей</label>
-          <div className="grid grid-cols-2 gap-2 mt-1 max-h-40 overflow-y-auto">
+          <label htmlFor="film-persons" className="text-sm text-white/70">Выбрать персонажей</label>
+          <div id="film-persons" className="grid grid-cols-2 gap-2 mt-1 max-h-40 overflow-y-auto">
             {persons.map(p =>
-              <PersonCard key={p.id} person={p} selected={selectedPersons.some(sp => sp.personId === p.id)}
+              <PersonCard
+                key={p.id}
+                person={p}
+                selected={selectedPersons.some(sp => sp.personId === p.id)}
                 onToggle={() => setSelectedPersons(prev =>
                   prev.some(sp => sp.personId === p.id)
                     ? prev.filter(sp => sp.personId !== p.id)
                     : [...prev, { personId: p.id, careerId: p.careerId }]
-                )} />
+                )}
+              />
             )}
           </div>
         </div>
 
+        {/* Добавление нового персонажа */}
         <div className="space-y-2 border-t border-white/20 pt-3">
           <h3 className="font-semibold">Добавить нового персонажа</h3>
-          <input className={inputStyle} placeholder="Имя" value={newPerson.name} onChange={e => setNewPerson({ ...newPerson, name: e.target.value })} />
-          <input type="date" className={inputStyle} value={newPerson.dateOfBirth} onChange={e => setNewPerson({ ...newPerson, dateOfBirth: e.target.value })} />
+
+          <label htmlFor="new-person-name" className="text-sm text-white/70">Имя</label>
+          <input
+            id="new-person-name"
+            className={inputStyle}
+            placeholder="Имя"
+            value={newPerson.name}
+            onChange={e => setNewPerson({ ...newPerson, name: e.target.value })}
+          />
+
+          <label htmlFor="new-person-dob" className="text-sm text-white/70">Дата рождения</label>
+          <input
+            id="new-person-dob"
+            type="date"
+            className={inputStyle}
+            value={newPerson.dateOfBirth}
+            onChange={e => setNewPerson({ ...newPerson, dateOfBirth: e.target.value })}
+          />
 
           <div className="relative">
+            <span className="text-sm text-white/70">Карьера</span>
             <button type="button" onClick={() => setIsCareerOpen(prev => !prev)}
               className="w-full px-3 py-2 bg-gray-800 border border-white/10 rounded-md text-left flex justify-between items-center">
               {newPerson.careerId ? careers.find(c => c.id === newPerson.careerId)?.name : "Выберите карьеру"}
@@ -185,10 +267,12 @@ export default function CreateFilmPage() {
             }
           </div>
 
+
           <FileDropZone label="Фото персонажа" accept="image/*" file={newPerson.photo} onChange={f => setNewPerson({ ...newPerson, photo: f })} />
           <button onClick={addNewPerson} className="w-full py-1 rounded-md bg-green-500 hover:bg-green-600 transition">Добавить персонажа</button>
         </div>
 
+        {/* Файлы фильма */}
         <FileDropZone label="Постер" accept="image/*" file={poster} onChange={setPoster} />
         <FileDropZone label="Фильм" accept="video/*" file={filmFile} onChange={setFilmFile} />
 

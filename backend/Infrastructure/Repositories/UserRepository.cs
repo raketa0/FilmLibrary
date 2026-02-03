@@ -21,7 +21,7 @@ namespace FilmLibrary.Infrastructure.Repositories
 
         public async Task<User?> GetByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email.Value == email);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email != null && u.Email.Value == email);
         }
 
         public async Task AddAsync(User user)

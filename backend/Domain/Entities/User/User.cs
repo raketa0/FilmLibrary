@@ -9,8 +9,8 @@ namespace Domain.Entities.User
             new List<HistoryOfViewFilm.HistoryOfViewFilm>();
         public new Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public Email Email { get; set; }
-        public Password Password { get; set; }
+        public Email? Email { get; set; }
+        public Password? Password { get; set; }
         public DateTime DateOfBirth { get; set; }
         public DateTime RegistrationDate { get; private set; } = DateTime.Now;
         public string? LinkToAvatar { get; set; }

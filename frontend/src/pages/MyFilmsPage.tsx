@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getMyFilmsStats } from "../api/films";
-import Chart from "chart.js/auto";
 import { Bar } from "react-chartjs-2";
 
 export default function MyFilmsPage({ userId }: { userId: string }) {
@@ -32,12 +31,10 @@ export default function MyFilmsPage({ userId }: { userId: string }) {
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Мои фильмы</h1>
 
-      {/* График */}
       <div className="max-w-4xl">
         <Bar data={data} />
       </div>
 
-      {/* Список фильмов */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((film) => (
           <div key={film.filmId} className="border p-4 rounded-md bg-gray-900 text-white">

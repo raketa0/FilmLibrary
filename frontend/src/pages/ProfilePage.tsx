@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import type { UpdateProfileDto } from "../types/UserDto";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +20,11 @@ export default function ProfilePage() {
       setName(user.name);
       setEmail(user.email);
       setDateOfBirth(user.dateOfBirth?.substring(0, 10) ?? "");
-      setPreview(user.linkToAvatar ? `http://localhost:5084/store/${user.linkToAvatar}` : null);
+      setPreview(
+        user.linkToAvatar
+          ? `http://localhost:5084/store/${user.linkToAvatar}`
+          : null
+      );
       setInitialized(true);
     }
   }, [user, initialized]);
@@ -61,7 +65,9 @@ export default function ProfilePage() {
         return;
       }
       if (resAvatar.user?.linkToAvatar) {
-        setPreview(`http://localhost:5084/store/${resAvatar.user.linkToAvatar}`);
+        setPreview(
+          `http://localhost:5084/store/${resAvatar.user.linkToAvatar}`
+        );
       }
     }
 
@@ -71,10 +77,14 @@ export default function ProfilePage() {
 
   const handleDelete = async () => {
     if (!user) return;
-    const confirmed = window.confirm("Вы уверены, что хотите удалить свой аккаунт? Это действие необратимо!");
+
+    const confirmed = window.confirm(
+      "Вы уверены, что хотите удалить свой аккаунт? Это действие необратимо!"
+    );
     if (!confirmed) return;
 
     const res = await deleteAccount(user.id);
+
     if (!res.success) {
       alert(res.error || "Ошибка удаления аккаунта");
       return;
@@ -97,7 +107,11 @@ export default function ProfilePage() {
         onDragOver={(e) => e.preventDefault()}
       >
         {preview ? (
-          <img src={preview} className="w-full h-full object-cover" alt="Аватар" />
+          <img
+            src={preview}
+            className="w-full h-full object-cover"
+            alt="Аватар пользователя"
+          />
         ) : (
           <span>Перетащи фото</span>
         )}
@@ -107,28 +121,40 @@ export default function ProfilePage() {
         type="file"
         accept="image/*"
         className="mt-3"
-        onChange={(e) => e.target.files && handleFileSelect(e.target.files[0])}
+        onChange={(e) =>
+          e.target.files && handleFileSelect(e.target.files[0])
+        }
       />
 
       {/* Имя */}
-      <label className="block mt-6">Имя</label>
+      <label htmlFor="name" className="block mt-6">
+        Имя
+      </label>
       <input
+        id="name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="w-full mt-1 px-3 py-2 bg-transparent border border-white/10 rounded"
       />
 
       {/* Email */}
-      <label className="block mt-4">Email</label>
+      <label htmlFor="email" className="block mt-4">
+        Email
+      </label>
       <input
+        id="email"
+        type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         className="w-full mt-1 px-3 py-2 bg-transparent border border-white/10 rounded"
       />
 
       {/* Дата рождения */}
-      <label className="block mt-4">Дата рождения</label>
+      <label htmlFor="dob" className="block mt-4">
+        Дата рождения
+      </label>
       <input
+        id="dob"
         type="date"
         value={dateOfBirth}
         onChange={(e) => setDateOfBirth(e.target.value)}
@@ -136,8 +162,11 @@ export default function ProfilePage() {
       />
 
       {/* Пароль */}
-      <label className="block mt-4">Новый пароль (необязательно)</label>
+      <label htmlFor="password" className="block mt-4">
+        Новый пароль (необязательно)
+      </label>
       <input
+        id="password"
         type="password"
         placeholder="Оставьте пустым"
         value={password}
@@ -152,7 +181,6 @@ export default function ProfilePage() {
         Сохранить
       </button>
 
-      {/* Кнопка удаления аккаунта */}
       <button
         onClick={handleDelete}
         className="mt-4 w-full py-3 bg-red-600 rounded hover:bg-red-500 transition"

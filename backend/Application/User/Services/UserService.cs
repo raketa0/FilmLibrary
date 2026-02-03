@@ -35,7 +35,7 @@ namespace Application.User.Services
         public async Task<UserDto?> LoginAsync(LoginDto dto)
         {
             var user = await _userRepository.GetByEmailAsync(dto.Email);
-            if (user == null || !user.Password.Verify(dto.Password))
+            if (user == null || user.Password == null || !user.Password.Verify(dto.Password))
                 throw new UnauthorizedAccessException("Неверный логин");
 
             return MapToDto(user);
@@ -67,11 +67,10 @@ namespace Application.User.Services
             var users = await _userRepository.GetAllAsync();
             var userDtos = users.Select(user => new UsersDto
             {
-
                 Id = user.Id,
                 Name = user.Name,
-                Email = user.Email.Value,
-                Password = user.Password.HashedValue,
+                Email = user.Email?.Value ?? string.Empty, // Безопасное обращение
+                Password = user.Password?.HashedValue,     // Безопасное обращение
                 RegistrationDate = user.RegistrationDate,
                 DateOfBirth = user.DateOfBirth,
                 LinkToAvatar = user.LinkToAvatar
@@ -97,11 +96,14 @@ namespace Application.User.Services
 			var user = await _userRepository.GetByIdAsync(id)
 				?? throw new KeyNotFoundException("Пользователь не найден");
 
-			var userEmail = user.Email.Value;
-			var userFolder = Path.Combine(_storePath, userEmail);
-			if (Directory.Exists(userFolder))
+			var userEmail = user.Email?.Value;
+			if (!string.IsNullOrEmpty(userEmail))
 			{
-				Directory.Delete(userFolder, recursive: true); 
+				var userFolder = Path.Combine(_storePath, userEmail);
+				if (Directory.Exists(userFolder))
+				{
+					Directory.Delete(userFolder, recursive: true); 
+				}
 			}
 
 			await _userRepository.DeleteAsync(id);
@@ -115,7 +117,7 @@ namespace Application.User.Services
             {
                 Id = user.Id,
                 Name = user.Name,
-                Email = user.Email.Value,
+                Email = user.Email?.Value ?? string.Empty,
                 DateOfBirth = user.DateOfBirth,
                 LinkToAvatar = user.LinkToAvatar
             };

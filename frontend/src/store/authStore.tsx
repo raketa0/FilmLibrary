@@ -29,7 +29,7 @@ const initialUser: UserDto | null = (() => {
   }
 })();
 
-export const useAuthStore = create<State>((set, get) => ({
+export const useAuthStore = create<State>((set) => ({
   user: initialUser,
 
   setUser: (user) => {

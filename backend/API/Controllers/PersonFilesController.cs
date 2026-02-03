@@ -7,7 +7,6 @@ public class PersonFilesController : ControllerBase
 {
     private readonly IPersonService _personService;
     private readonly string _storePath = @"D:\studies\FilmLibrary\store";
-    private readonly string __storePath = @"D:\studies\FilmLibrary\store\persons";
 
     public PersonFilesController(IPersonService personService)
     {

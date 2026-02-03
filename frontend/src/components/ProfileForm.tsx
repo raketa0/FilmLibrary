@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { type UpdateProfileDto, type UserDto } from '../types/UserDto';
